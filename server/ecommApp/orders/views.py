@@ -3,6 +3,7 @@ from rest_framework import views,generics,authentication,permissions,response,st
 from .models import OrderModels
 from .serializers import OrderSerializers
 from carts.models import CartModels
+from orderItems.models import OrderItemModels
 
 # Create your views here.
 class OrdersView(generics.CreateAPIView):
@@ -18,9 +19,9 @@ class OrdersView(generics.CreateAPIView):
         if not cart_items.exists():
             return response.Response({"message": "No items in cart"}, status=status.HTTP_400_BAD_REQUEST)
         
-        amount = 0;
+        amount = 0
         for item in cart_items:
-            amount += item.productId.price
+            amount += item.productId.price*item.quantity
             
         order_status = "Order Accepted"
         shipping_address = user.profile.address
@@ -36,6 +37,15 @@ class OrdersView(generics.CreateAPIView):
             shippingAddress = shipping_address,
             paymentDetails = payment_details
         )
+
+        for item in cart_items:
+            OrderItemModels.objects.create(
+                order=order,
+                product=item.productId,
+                price=item.productId.price,
+                quantity=item.quantity
+            )
         
-        return response.Response(self.get_serializer(order).data, status=status.HTTP_201_CREATED)
+        cart_items.delete()
         
+        return response.Response(self.get_serializer(order).data, status=status.HTTP_201_CREATED)        
