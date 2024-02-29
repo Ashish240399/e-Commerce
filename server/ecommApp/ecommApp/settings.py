@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'carts',
     'orders',
     'orderItems',
-    'reviews'
+    'reviews',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +56,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'ecommApp.urls'
@@ -109,6 +112,12 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # If your frontend is served on http://localhost:3000
+    "http://127.0.0.1:9000",  # Or any other origin
+    "http://localhost:5500"
 ]
 
 
