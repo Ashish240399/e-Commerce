@@ -72,6 +72,7 @@ class LoginView(views.APIView):
 
 class UsersDetailView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
+    auntentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get_object(self):

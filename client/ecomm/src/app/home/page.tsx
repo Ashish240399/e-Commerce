@@ -1,20 +1,12 @@
-"use client";
-import { useRouter } from "next/navigation";
 import React from "react";
+import ProductHomePage from "./home";
 
 type Props = {};
 
 const HomePage = (props: Props) => {
-  const router = useRouter();
   return (
     <div>
-      <button
-        onClick={() => {
-          router.push("/home/12");
-        }}
-      >
-        Got to product Details
-      </button>
+      <ProductHomePage />
     </div>
   );
 };
