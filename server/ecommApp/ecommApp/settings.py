@@ -117,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # If your frontend is served on http://localhost:3000
     "http://127.0.0.1:9000",  # Or any other origin
-    "http://localhost:5500"
+    "http://localhost:8081"
 ]
 
 
