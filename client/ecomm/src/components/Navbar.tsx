@@ -1,13 +1,22 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import logo from "../assets/images/logo.png";
 import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const pathname = usePathname();
+  const [userDetails, setUserDetails] = useState<UserType | null>(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      setUserDetails(JSON.parse(userData));
+    }
+  }, []);
   console.log(pathname);
+  console.log(userDetails);
   return (
     <div className="bg-primary text-text flex justify-between items-center px-[2.5%] h-[70px]">
       <div className="flex gap-1 items-center justify-center">
@@ -46,14 +55,22 @@ const Navbar = () => {
           ></div>
         </div>
         <div className="w-fit relative">
-          <Link href="/auth/login">Login</Link>
-          <div
-            className={`${
-              pathname == "/auth/login"
-                ? "h-[1px] rounded-lg w-full bg-secondary absolute top-[100%] left-0 transition-all"
-                : "h-[1px] rounded-lg w-0 bg-secondary absolute top-[100%] left-0 transition-all"
-            }`}
-          ></div>
+          {!userDetails ? (
+            <div>
+              <Link href="/auth/login">Login</Link>
+              <div
+                className={`${
+                  pathname == "/auth/login"
+                    ? "h-[1px] rounded-lg w-full bg-secondary absolute top-[100%] left-0 transition-all"
+                    : "h-[1px] rounded-lg w-0 bg-secondary absolute top-[100%] left-0 transition-all"
+                }`}
+              ></div>
+            </div>
+          ) : (
+            <div>
+              <Link href={"/account"}>{userDetails.firstName}</Link>
+            </div>
+          )}
         </div>
       </div>
     </div>

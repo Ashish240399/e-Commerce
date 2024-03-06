@@ -1,16 +1,27 @@
 import Image from "next/image";
 import React from "react";
 import Buttons from "./Buttons";
-import config from "../../tailwind.config";
+import { addToCart } from "@/services/addToCart";
+import TransparentButton from "./TransparentButton";
 
 type Props = {
   product: ProductType;
   productDetailsFn: Function;
+  token: string;
 };
 
-function ProductCard({ product, productDetailsFn }: Props) {
+function ProductCard({ product, productDetailsFn, token }: Props) {
   function setProductDetails() {
     productDetailsFn(product.id);
+  }
+
+  async function addToCartFn() {
+    try {
+      const response = await addToCart(product.id, token);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
   }
   return (
     <div className="bg-cardColor rounded-lg overflow-hidden h-[500px]">
@@ -42,8 +53,13 @@ function ProductCard({ product, productDetailsFn }: Props) {
           </div>
           <div className="font-bold text-[14px]">${product.price}</div>
         </div>
-        <div className="flex items-end justify-end w-[100%]">
-          <Buttons action={setProductDetails} bg="#15F5BA" text="Add To Cart" />
+        <div className="flex items-end justify-between w-[100%] gap-3">
+          <Buttons action={addToCartFn} bg="#15F5BA" text="Add To Cart" />
+          <TransparentButton
+            action={setProductDetails}
+            borderColor="#15F5BA"
+            text="Details"
+          />
         </div>
       </div>
     </div>

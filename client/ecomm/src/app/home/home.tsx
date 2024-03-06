@@ -1,15 +1,18 @@
 "use client";
 
 import ProductCard from "@/components/ProductCard";
+import { ProductContext } from "@/context/productContext/productContext";
 import { getProducts } from "@/services/getProducts";
+import { getTokenFromLocalStorage } from "@/utils/getTokenFromLocalStorage";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 type Props = {};
 
 const ProductHomePage = (props: Props) => {
   const router = useRouter();
-  const [products, setProducts] = useState<ProductType[]>([]);
+  const productContext = useContext(ProductContext);
+  const token = getTokenFromLocalStorage();
 
   useEffect(() => {
     getProductsFn();
@@ -18,7 +21,7 @@ const ProductHomePage = (props: Props) => {
   async function getProductsFn() {
     try {
       const response = await getProducts();
-      setProducts(response);
+      productContext?.setProducts(response);
     } catch (error) {
       console.log(error);
     }
@@ -30,11 +33,12 @@ const ProductHomePage = (props: Props) => {
   return (
     <div>
       <div className="w-[90%] m-auto grid grid-cols-4 gap-3">
-        {products.map((product: ProductType) => (
+        {productContext?.products.map((product: ProductType) => (
           <div key={product.id}>
             <ProductCard
               product={product}
               productDetailsFn={getProductDetails}
+              token={token}
             />
           </div>
         ))}
