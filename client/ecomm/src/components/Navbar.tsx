@@ -1,20 +1,25 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import logo from "../assets/images/logo.png";
 import { usePathname } from "next/navigation";
+import { UserContext } from "@/context/userContext/userContext";
 
 const Navbar = () => {
   const pathname = usePathname();
   const [userDetails, setUserDetails] = useState<UserType | null>(null);
+  const userContext = useContext(UserContext);
 
   useEffect(() => {
+    if (userContext?.user) {
+      setUserDetails(userContext.user);
+    }
     const userData = localStorage.getItem("user");
     if (userData) {
       setUserDetails(JSON.parse(userData));
     }
-  }, []);
+  }, [userContext]);
   console.log(pathname);
   console.log(userDetails);
   return (

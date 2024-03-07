@@ -1,11 +1,15 @@
 "use client";
+import { UserContext } from "@/context/userContext/userContext";
 import { getUserDetails } from "@/services/getUserDeatils";
 import { login } from "@/services/loginAPI";
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useContext, useState } from "react";
 
 type Props = {};
 
 const LoginPage = (props: Props) => {
+  const userContext = useContext(UserContext);
+  const router = useRouter();
   const [loginForm, setLoginForm] = useState({
     email: "",
     password: "",
@@ -38,6 +42,8 @@ const LoginPage = (props: Props) => {
     try {
       const response = await getUserDetails(token);
       localStorage.setItem("user", JSON.stringify(response));
+      userContext?.setUser(response);
+      router.push("/home");
     } catch (error: any) {
       console.log(error.response.data);
     }

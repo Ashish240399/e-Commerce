@@ -1,16 +1,23 @@
+"use client";
 import Image from "next/image";
-import React from "react";
+import React, { useContext } from "react";
 import Buttons from "./Buttons";
 import { addToCart } from "@/services/addToCart";
 import TransparentButton from "./TransparentButton";
+import AddRemoveFromCartButton from "./AddRemoveFromCartButton";
+import { removeFromCart } from "@/services/removeFromCart";
+import { CartContext } from "@/context/cartContext/cartContext";
+import { getCart } from "@/services/getCart";
 
 type Props = {
   product: ProductType;
   productDetailsFn: Function;
   token: string;
+  cartValue?: number;
 };
 
-function ProductCard({ product, productDetailsFn, token }: Props) {
+function ProductCard({ product, productDetailsFn, token, cartValue }: Props) {
+  const cartContext = useContext(CartContext);
   function setProductDetails() {
     productDetailsFn(product.id);
   }
@@ -18,9 +25,29 @@ function ProductCard({ product, productDetailsFn, token }: Props) {
   async function addToCartFn() {
     try {
       const response = await addToCart(product.id, token);
-      console.log(response);
+      cartContext?.addCartCount();
+      getCartFn();
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async function removeFromCartFn() {
+    try {
+      const response = await removeFromCart(product.id, token);
+      cartContext?.removeCartCount();
+      getCartFn();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function getCartFn() {
+    try {
+      const response = await getCart(token);
+      cartContext?.setCart(response);
+    } catch (error: any) {
+      console.log(error.response.data);
     }
   }
   return (
@@ -54,7 +81,16 @@ function ProductCard({ product, productDetailsFn, token }: Props) {
           <div className="font-bold text-[14px]">${product.price}</div>
         </div>
         <div className="flex items-end justify-between w-[100%] gap-3">
-          <Buttons action={addToCartFn} bg="#15F5BA" text="Add To Cart" />
+          {cartValue ? (
+            <AddRemoveFromCartButton
+              addFunction={addToCartFn}
+              removeFunction={removeFromCartFn}
+              value={cartValue}
+            />
+          ) : (
+            <Buttons action={addToCartFn} bg="#15F5BA" text="Add To Cart" />
+          )}
+
           <TransparentButton
             action={setProductDetails}
             borderColor="#15F5BA"

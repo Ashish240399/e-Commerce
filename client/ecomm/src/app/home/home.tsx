@@ -1,7 +1,9 @@
 "use client";
 
 import ProductCard from "@/components/ProductCard";
+import { CartContext } from "@/context/cartContext/cartContext";
 import { ProductContext } from "@/context/productContext/productContext";
+import { UserContext } from "@/context/userContext/userContext";
 import { getProducts } from "@/services/getProducts";
 import { getTokenFromLocalStorage } from "@/utils/getTokenFromLocalStorage";
 import { useRouter } from "next/navigation";
@@ -12,6 +14,12 @@ type Props = {};
 const ProductHomePage = (props: Props) => {
   const router = useRouter();
   const productContext = useContext(ProductContext);
+  const cartContext = useContext(CartContext);
+  const userContext = useContext(UserContext);
+  const [productIdInCart, setProductIdInCart] = useState<number[]>([]);
+  const [productQuantityInCart, setProductQuantityInCart] = useState<number[]>(
+    []
+  );
   const token = getTokenFromLocalStorage();
 
   useEffect(() => {
@@ -30,6 +38,20 @@ const ProductHomePage = (props: Props) => {
   function getProductDetails(id: number) {
     router.push("/home/" + id);
   }
+  useEffect(() => {
+    if (cartContext?.cart) {
+      console.log("calling set cart in use effect", cartContext.cart);
+      const productIdArr: number[] = [];
+      const productQuantityArr: number[] = [];
+      for (let i = 0; i < cartContext?.cart.length; i++) {
+        productIdArr.push(cartContext?.cart[i].productId);
+        productQuantityArr.push(cartContext?.cart[i].quantity);
+      }
+      setProductIdInCart(productIdArr);
+      setProductQuantityInCart(productQuantityArr);
+    }
+  }, [cartContext]);
+  console.log(userContext?.user);
   return (
     <div>
       <div className="w-[90%] m-auto grid grid-cols-4 gap-3">
@@ -39,6 +61,11 @@ const ProductHomePage = (props: Props) => {
               product={product}
               productDetailsFn={getProductDetails}
               token={token}
+              cartValue={
+                productIdInCart.includes(product.id)
+                  ? productQuantityInCart[productIdInCart.indexOf(product.id)]
+                  : 0
+              }
             />
           </div>
         ))}

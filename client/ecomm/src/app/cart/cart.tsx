@@ -1,4 +1,5 @@
 "use client";
+import Buttons from "@/components/Buttons";
 import CartItem from "@/components/CartItem";
 import { CartContext } from "@/context/cartContext/cartContext";
 import { ProductContext } from "@/context/productContext/productContext";
@@ -30,6 +31,7 @@ const Cart = (props: Props) => {
 
   useEffect(() => {
     if (cartContext?.cart && productList) {
+      let totalCost = 0;
       console.log("line 31", cartContext?.cart.length);
       const cartArr: any = [];
       for (let i = 0; i < cartContext?.cart?.length; i++) {
@@ -38,11 +40,13 @@ const Cart = (props: Props) => {
             cartArr.push(productList[j]);
             cartArr[cartArr.length - 1].quantity =
               cartContext?.cart[i].quantity;
+            totalCost += cartContext.cart[i].quantity * +productList[j].price;
             break;
           }
         }
       }
       setCartList(cartArr);
+      cartContext.setTotalPrice(totalCost);
     }
   }, [cartContext?.cart]);
 
@@ -50,6 +54,7 @@ const Cart = (props: Props) => {
     try {
       const response = await addToCart(id, token);
       console.log(response);
+      cartContext?.addCartCount();
       getCartFn();
     } catch (error) {
       console.log(error);
@@ -60,22 +65,37 @@ const Cart = (props: Props) => {
     try {
       const response = await removeFromCart(id, token);
       console.log(response);
+      cartContext?.removeCartCount();
       getCartFn();
     } catch (error) {
       console.log(error);
     }
   }
-  console.log(cartList);
+
+  async function checkOutFn() {
+    try {
+      console.log("checkout");
+    } catch (error) {}
+  }
+
   return (
-    <div>
-      {cartList.map((cartItem: CartItemType, id) => (
-        <CartItem
-          cartItem={cartItem}
-          addToCart={addToCartFn}
-          removeFromCart={removeFromCartFn}
-          key={id}
-        />
-      ))}
+    <div className="w-[90%] m-auto">
+      <div className="h-[70vh] overflow-auto">
+        {cartList.map((cartItem: CartItemType, id) => (
+          <CartItem
+            cartItem={cartItem}
+            addToCart={addToCartFn}
+            removeFromCart={removeFromCartFn}
+            key={id}
+          />
+        ))}
+      </div>
+      <div className="flex flex-col justify-end items-end mt-3">
+        <div>Total: {cartContext?.totalPrice.toFixed(2)}$</div>
+        <div className="w-[20%]">
+          <Buttons action={checkOutFn} bg="#15F5BA" text="Checkout" />
+        </div>
+      </div>
     </div>
   );
 };
