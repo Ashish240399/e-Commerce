@@ -1,5 +1,5 @@
 "use client";
-import Buttons from "@/components/Buttons";
+import TransparentButton from "@/components/TransparentButton";
 import { UserContext } from "@/context/userContext/userContext";
 import React, { useContext } from "react";
 
@@ -15,7 +15,18 @@ const Account = (props: Props) => {
   }
   return (
     <div>
-      <Buttons action={logout} bg="#15F5BA" text="Logout" />
+      <div>
+        Name: {userContext?.user?.firstName + " " + userContext?.user?.lastName}
+      </div>
+      <div>Address: {userContext?.user?.address}</div>
+      <div>Email: {userContext?.user?.email}</div>
+      <div className="w-[200px]">
+        <TransparentButton
+          action={logout}
+          borderColor="#15F5BA"
+          text="Logout"
+        />
+      </div>
     </div>
   );
 };

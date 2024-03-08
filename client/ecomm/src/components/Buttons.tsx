@@ -11,8 +11,8 @@ function Buttons({ text, bg, action }: Props) {
     <button
       style={{ backgroundColor: bg }}
       className="w-full rounded-lg flex items-center justify-center h-[40px] text-[black]"
-      onClick={() => {
-        action();
+      onClick={(e) => {
+        action(e);
       }}
     >
       {text}{" "}

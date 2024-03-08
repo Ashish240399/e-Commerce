@@ -1,7 +1,9 @@
 "use client";
+import Buttons from "@/components/Buttons";
 import { UserContext } from "@/context/userContext/userContext";
 import { getUserDetails } from "@/services/getUserDeatils";
 import { login } from "@/services/loginAPI";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useContext, useState } from "react";
 
@@ -49,25 +51,38 @@ const LoginPage = (props: Props) => {
     }
   }
   return (
-    <div>
+    <div className="flex items-center justify-center h-[90vh]">
       <form
         onSubmit={handleSubmit}
         className="w-[300px] p-4 bg-slate-500 flex flex-col gap-3 m-auto"
         action=""
       >
+        <p className="text-[24px] font-bold">Login</p>
+        <div className="mb-[-5%] text-[13px] text-smalltext">Email</div>
         <input
-          className="text-black"
+          className="bg-[transparent] text-text border border-secondary rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
           name="email"
           onChange={handleChange}
           type="email"
         />
+        <div className="mb-[-5%] text-[13px] text-smalltext">Password</div>
         <input
-          className="text-black"
+          className="bg-[transparent] text-text border border-secondary rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
           name="password"
           onChange={handleChange}
           type="password"
         />
-        <input type="submit" value="Submit" />
+        <div className="mt-[8%]">
+          <Buttons action={handleSubmit} bg="#15F5BA" text="Login" />
+        </div>
+
+        {/* <input type="submit" value="Submit" /> */}
+        <p className="text-smalltext text-[13px] text-end">
+          {"Don't"} have an account?{" "}
+          <Link href="/auth/register" className="text-secondary">
+            Register
+          </Link>
+        </p>
       </form>
     </div>
   );
