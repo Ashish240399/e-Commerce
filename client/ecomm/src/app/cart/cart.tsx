@@ -7,15 +7,21 @@ import { addToCart } from "@/services/addToCart";
 import { getCart } from "@/services/getCart";
 import { removeFromCart } from "@/services/removeFromCart";
 import { getTokenFromLocalStorage } from "@/utils/getTokenFromLocalStorage";
+import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
+import useRazorpay from "react-razorpay";
+import logo from "../../assets/images/logo.png";
+import { useRouter } from "next/navigation";
 
 type Props = {};
 
 const Cart = (props: Props) => {
+  const router = useRouter();
   const cartContext = useContext(CartContext);
   const productList = useContext(ProductContext)?.products;
   const token = getTokenFromLocalStorage();
   const [cartList, setCartList] = useState<CartItemType[]>([]);
+  const [Razorpay] = useRazorpay();
 
   useEffect(() => {
     getCartFn();
@@ -73,10 +79,101 @@ const Cart = (props: Props) => {
   }
 
   async function checkOutFn() {
-    try {
-      console.log("checkout");
-    } catch (error) {}
+    razorPay();
   }
+
+  // complete order
+  const complete_order = (
+    paymentID: string,
+    orderID: string,
+    signature: string
+  ) => {
+    axios({
+      method: "post",
+      url: "http://localhost:8000/razorpay/order/complete/",
+      data: {
+        payment_id: paymentID,
+        order_id: orderID,
+        signature: signature,
+        amount: Math.round(cartContext?.totalPrice || 0).toString() as string,
+      },
+      headers: {
+        Authorization: "Token " + token,
+      },
+    })
+      .then((response) => {
+        console.log(response.data);
+        getCartFn();
+        router.push("/");
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+      });
+  };
+
+  const razorPay = () => {
+    //create order
+    axios({
+      method: "post",
+      url: "http://localhost:8000/razorpay/order/create/",
+      data: {
+        amount: Math.round(cartContext?.totalPrice || 0).toString() as string,
+        currency: "INR",
+      },
+      headers: {
+        Authorization: "Token " + token,
+      },
+    })
+      .then((response: any) => {
+        // get order id
+        var order_id = response.data.data.id;
+
+        // handle payment
+        const options = {
+          key: "rzp_test_ibo3MeLmlOXQXe", // Enter the Key ID generated from the Dashboard
+          name: "Ecommerce",
+          amount: Math.round(cartContext?.totalPrice || 0).toString() as string,
+          currency: "INR",
+          description: "Test Transaction",
+          image: logo.toString(),
+          order_id: order_id, //This is a sample Order ID. Pass the `id` obtained in the response of createOrder().
+          handler: function (response: any) {
+            //complete order
+            complete_order(
+              response.razorpay_payment_id,
+              response.razorpay_order_id,
+              response.razorpay_signature
+            );
+          },
+          prefill: {
+            name: "Ashish",
+            email: "ashish@gmail.com",
+            contact: "9999999999",
+          },
+          notes: {
+            address: "Razorpay Corporate Office",
+          },
+          theme: {
+            color: "#3399cc",
+          },
+        };
+
+        const rzp1 = new Razorpay(options);
+        rzp1.on("payment.failed", function (response: any) {
+          alert(response.error.code);
+          alert(response.error.description);
+          alert(response.error.source);
+          alert(response.error.step);
+          alert(response.error.reason);
+          alert(response.error.metadata.order_id);
+          alert(response.error.metadata.payment_id);
+        });
+        rzp1.open();
+      })
+      .catch((error: any) => {
+        console.log(error.response.data);
+      });
+  };
 
   return (
     <div className="w-[90%] m-auto">
