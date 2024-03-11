@@ -20,8 +20,6 @@ const Navbar = () => {
       setUserDetails(JSON.parse(userData));
     }
   }, [userContext]);
-  console.log(pathname);
-  console.log(userDetails);
   return (
     <div className="bg-primary text-text flex justify-between items-center px-[2.5%] h-[70px]">
       <div className="flex gap-1 items-center justify-center">

@@ -6,14 +6,20 @@ type props = {
   cartItem: CartItemType;
   addToCart: Function;
   removeFromCart: Function;
+  cartContext: any;
 };
 
-const CartItem = ({ cartItem, addToCart, removeFromCart }: props) => {
+const CartItem = ({
+  cartItem,
+  addToCart,
+  removeFromCart,
+  cartContext,
+}: props) => {
   function addToCartCallback() {
-    addToCart(cartItem.id);
+    addToCart(cartItem.id, cartContext);
   }
   function removeFromCartCallback() {
-    removeFromCart(cartItem.id);
+    removeFromCart(cartItem.id, cartContext);
   }
   return (
     <div className="w-[100%] flex justify-between items-center gap-[10%] my-6 py-2 border-b-2 border-b-[#80808075]">

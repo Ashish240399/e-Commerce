@@ -8,6 +8,7 @@ import AddRemoveFromCartButton from "./AddRemoveFromCartButton";
 import { removeFromCart } from "@/services/removeFromCart";
 import { CartContext } from "@/context/cartContext/cartContext";
 import { getCart } from "@/services/getCart";
+import { useRouter } from "next/navigation";
 
 type Props = {
   product: ProductType;
@@ -17,7 +18,9 @@ type Props = {
 };
 
 function ProductCard({ product, productDetailsFn, token, cartValue }: Props) {
+  console.log(token);
   const cartContext = useContext(CartContext);
+  const router = useRouter();
   function setProductDetails() {
     productDetailsFn(product.id);
   }
@@ -50,6 +53,12 @@ function ProductCard({ product, productDetailsFn, token, cartValue }: Props) {
       console.log(error.response.data);
     }
   }
+
+  function goToLoginPage() {
+    alert("Please login to add product to cart");
+    router.push("/auth/login");
+  }
+
   return (
     <div className="bg-cardColor rounded-lg overflow-hidden h-[500px]">
       <div className="w-full h-[]">
@@ -88,7 +97,11 @@ function ProductCard({ product, productDetailsFn, token, cartValue }: Props) {
               value={cartValue}
             />
           ) : (
-            <Buttons action={addToCartFn} bg="#15F5BA" text="Add To Cart" />
+            <Buttons
+              action={token.length != 0 ? addToCartFn : goToLoginPage}
+              bg="#15F5BA"
+              text="Add To Cart"
+            />
           )}
 
           <TransparentButton

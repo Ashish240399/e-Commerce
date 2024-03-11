@@ -4,14 +4,16 @@ import CartItem from "@/components/CartItem";
 import { CartContext } from "@/context/cartContext/cartContext";
 import { ProductContext } from "@/context/productContext/productContext";
 import { addToCart } from "@/services/addToCart";
-import { getCart } from "@/services/getCart";
 import { removeFromCart } from "@/services/removeFromCart";
 import { getTokenFromLocalStorage } from "@/utils/getTokenFromLocalStorage";
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import useRazorpay from "react-razorpay";
-import logo from "../../assets/images/logo.png";
+import logo from "../../../assets/images/logo.png";
 import { useRouter } from "next/navigation";
+import { getCartFn } from "@/utils/getCart";
+import { addToCartFn } from "@/utils/addToCart";
+import { removeFromCartFn } from "@/utils/removeFromCart";
 
 type Props = {};
 
@@ -24,16 +26,8 @@ const Cart = (props: Props) => {
   const [Razorpay] = useRazorpay();
 
   useEffect(() => {
-    getCartFn();
+    getCartFn(token, cartContext);
   }, []);
-  async function getCartFn() {
-    try {
-      const response = await getCart(token);
-      cartContext?.setCart(response);
-    } catch (error: any) {
-      console.log(error.response.data);
-    }
-  }
 
   useEffect(() => {
     if (cartContext?.cart && productList) {
@@ -55,28 +49,6 @@ const Cart = (props: Props) => {
       cartContext.setTotalPrice(totalCost);
     }
   }, [cartContext?.cart]);
-
-  async function addToCartFn(id: number) {
-    try {
-      const response = await addToCart(id, token);
-      console.log(response);
-      cartContext?.addCartCount();
-      getCartFn();
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  async function removeFromCartFn(id: number) {
-    try {
-      const response = await removeFromCart(id, token);
-      console.log(response);
-      cartContext?.removeCartCount();
-      getCartFn();
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   async function checkOutFn() {
     razorPay();
@@ -103,7 +75,7 @@ const Cart = (props: Props) => {
     })
       .then((response) => {
         console.log(response.data);
-        getCartFn();
+        getCartFn(token, cartContext);
         router.push("/");
       })
       .catch((error) => {
@@ -175,24 +147,43 @@ const Cart = (props: Props) => {
       });
   };
 
+  function navigateToLogin() {
+    router.push("/auth/login");
+  }
+
   return (
     <div className="w-[90%] m-auto">
-      <div className="h-[70vh] overflow-auto">
-        {cartList.map((cartItem: CartItemType, id) => (
-          <CartItem
-            cartItem={cartItem}
-            addToCart={addToCartFn}
-            removeFromCart={removeFromCartFn}
-            key={id}
-          />
-        ))}
-      </div>
-      <div className="flex flex-col justify-end items-end mt-3">
-        <div>Total: {cartContext?.totalPrice.toFixed(2)}$</div>
-        <div className="w-[20%]">
-          <Buttons action={checkOutFn} bg="#15F5BA" text="Checkout" />
+      {token.length == 0 && (
+        <div className="w-[50%] m-auto pt-[20%] flex flex-col justify-center items-center">
+          <h1 className="text-center text-2xl">
+            Please login to see your cart
+          </h1>
+          <div className="w-[18%] mt-6">
+            <Buttons action={navigateToLogin} bg="#15F5BA" text="Login" />
+          </div>
         </div>
-      </div>
+      )}
+      {token.length > 0 && (
+        <div>
+          <div className="h-[70vh] overflow-auto">
+            {cartList.map((cartItem: CartItemType, id) => (
+              <CartItem
+                cartItem={cartItem}
+                addToCart={addToCartFn}
+                removeFromCart={removeFromCartFn}
+                cartContext={cartContext}
+                key={id}
+              />
+            ))}
+          </div>
+          <div className="flex flex-col justify-end items-end mt-3">
+            <div>Total: {cartContext?.totalPrice.toFixed(2)}$</div>
+            <div className="w-[20%]">
+              <Buttons action={checkOutFn} bg="#15F5BA" text="Checkout" />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

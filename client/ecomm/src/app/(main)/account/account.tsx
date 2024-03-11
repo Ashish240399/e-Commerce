@@ -1,18 +1,28 @@
 "use client";
 import TransparentButton from "@/components/TransparentButton";
 import { UserContext } from "@/context/userContext/userContext";
-import React, { useContext } from "react";
+import { useRouter } from "next/navigation";
+import React, { useContext, useEffect } from "react";
 
 type Props = {};
 
 const Account = (props: Props) => {
   const userContext = useContext(UserContext);
+  const router = useRouter();
   function logout() {
     localStorage.removeItem("login-token");
     localStorage.removeItem("user");
+    router.push("/");
     userContext?.setUser(null);
-    window.location.href = "/";
+    location.reload();
   }
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      userContext?.setUser(JSON.parse(userData));
+    }
+  }, []);
+
   return (
     <div>
       <div>
