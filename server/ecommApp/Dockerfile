@@ -1,4 +1,5 @@
 # Use an official Python runtime as a parent image
+
 FROM python:3.10-slim-buster
 
 # Set environment variables
@@ -16,6 +17,7 @@ RUN apt-get update && apt-get install -y \
     pkg-config
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
+
 
 # Copy project
 COPY . /ecomm/

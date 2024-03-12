@@ -5,7 +5,6 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_DATABASE: "ecomm"
-      MYSQL_USER: "root"
       MYSQL_PASSWORD: "@Ashish7797"
       MYSQL_ROOT_PASSWORD: "@Ashish7797"
     volumes:
@@ -14,7 +13,7 @@ services:
 
   web:
     build: .
-    command: python /ecomm/manage.py runserver 0.0.0.0:8000
+    command: python /ecomm/manage.py makemigrations && python /ecomm/manage.py migrate && python /ecomm/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/ecomm
     ports:
