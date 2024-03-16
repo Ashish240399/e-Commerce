@@ -1,6 +1,8 @@
 "use client";
 import Buttons from "@/components/Buttons";
+import { checkOtp } from "@/services/checkOtp";
 import { register } from "@/services/registerAPI";
+import { sendEmail } from "@/services/sendEmail";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -9,6 +11,8 @@ type Props = {};
 
 const RegisterPage = (props: Props) => {
   const router = useRouter();
+  const [openOtpPop, setOpenOtpPop] = useState(false);
+  const [otp, setOtp] = useState("");
   const [registerForm, setRegisterForm] = useState<RegisterType>({
     firstName: "",
     lastName: "",
@@ -28,7 +32,7 @@ const RegisterPage = (props: Props) => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(registerForm);
-    registerFn();
+    sendEmailFn();
   };
 
   async function registerFn() {
@@ -40,8 +44,44 @@ const RegisterPage = (props: Props) => {
       console.log(error.response.data);
     }
   }
+
+  async function sendEmailFn() {
+    try {
+      const response = await sendEmail(registerForm.email);
+      if (response.detail == "OTP sent to email") {
+        setOpenOtpPop(true);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function verifyOtpFn() {
+    try {
+      const response = await checkOtp(registerForm.email, otp);
+      if ((response.message = "OTP verified")) {
+        registerFn();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
     <div className="h-[90vh] flex items-center justify-center">
+      {openOtpPop == true && (
+        <div className="fixed w-[100vw] h-[100vh] bg-[#00000075] flex justify-center items-center">
+          <div>
+            <p className="text-[24px] font-bold text-center">Enter OTP</p>
+            <input
+              className="bg-[transparent] text-text border border-secondary rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
+              type="text"
+              placeholder="OTP"
+              onChange={(e) => setOtp(e.target.value)}
+            />
+            <Buttons action={verifyOtpFn} bg="#15F5BA" text="Verify" />
+          </div>
+        </div>
+      )}
       <form
         className="w-[300px] p-4 bg-slate-500 flex flex-col gap-3 m-auto text-[14px]"
         onSubmit={handleSubmit}
