@@ -60,6 +60,7 @@ const RegisterPage = (props: Props) => {
     try {
       const response = await checkOtp(registerForm.email, otp);
       if ((response.message = "OTP verified")) {
+        setOpenOtpPop(false);
         registerFn();
       }
     } catch (error) {
@@ -68,12 +69,12 @@ const RegisterPage = (props: Props) => {
   }
   return (
     <div className="h-[90vh] flex items-center justify-center">
-      {openOtpPop == true && (
-        <div className="fixed w-[100vw] h-[100vh] bg-[#00000075] flex justify-center items-center">
-          <div>
+      {openOtpPop == false && (
+        <div className="fixed w-[100vw] h-[100vh] bg-[#000000be] flex justify-center items-center">
+          <div className="bg-primary p-[40px]  ">
             <p className="text-[24px] font-bold text-center">Enter OTP</p>
             <input
-              className="bg-[transparent] text-text border border-secondary rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
+              className="bg-[transparent] text-text border border-secondary rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent my-4"
               type="text"
               placeholder="OTP"
               onChange={(e) => setOtp(e.target.value)}
