@@ -8,6 +8,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from django.middleware.csrf import get_token
 from django.contrib.auth import get_user_model
+from otp.models import OTPModels
 
 # Create your views here.
 
@@ -40,6 +41,13 @@ class RegisterView(views.APIView):
         if User.objects.filter(email=email).exists():
             return response.Response({"detail": "Email already exists"}, status=status.HTTP_400_BAD_REQUEST)
         
+        try:
+            otpModel = OTPModels.objects.get(email=email)
+            if otpModel.verified==False:
+                return response.Response({"detail": "Email is not verified yet"}, status=status.HTTP_400_BAD_REQUEST)
+        except OTPModels.DoesNotExist:
+            return response.Response({"detail": "Email not verified"}, status=status.HTTP_400_BAD_REQUEST)
+
         user = User.objects.create_user(username=username, password=password, email=email)
         user.save()
         

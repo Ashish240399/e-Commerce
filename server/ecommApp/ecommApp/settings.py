@@ -47,7 +47,9 @@ INSTALLED_APPS = [
     'orderItems',
     'reviews',
     'corsheaders',
-    'razorpaybackend.apps.RazorpaybackendConfig'
+    'razorpaybackend.apps.RazorpaybackendConfig',
+    'mail',
+    'otp'
 ]
 
 REST_FRAMEWORK = {
@@ -99,7 +101,7 @@ DATABASES = {
         'NAME': 'ecomm',
         'USER': 'root',
         'PASSWORD': '@Ashish7797',
-        'HOST': 'db',   # Or an IP Address that your DB is hosted on
+        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
         'PORT': '3306',
     }
 }
@@ -167,3 +169,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET")
+
+
+# SMTP settings for email 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'easytobuy.test@gmail.com'
+EMAIL_HOST_PASSWORD = 'inpp sngs emwd ffpf '

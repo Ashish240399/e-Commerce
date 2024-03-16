@@ -24,5 +24,7 @@ urlpatterns = [
     path("cart/",include("carts.urls")),
     path("orders/",include("orders.urls")),
     path("reviews/",include("reviews.urls")),
-    path("razorpay/", include("razorpaybackend.api.urls"))
+    path("razorpay/", include("razorpaybackend.api.urls")),
+    path("email/", include("mail.urls")),
+    path("otp/", include("otp.urls"))
 ]
