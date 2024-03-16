@@ -1,0 +1,67 @@
+version: "3.8"
+
+services:
+  frontend:
+    build: ./client/ecomm
+    ports:
+      - "3000:3000"
+
+  db:
+    image: mysql:8.0.36
+    container_name: mysql
+    restart: always
+    volumes:
+      - data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "@Ashish7797"
+      MYSQL_DATABASE: ecomm
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysql",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-p@Ashish7797",
+          "-e",
+          "SELECT 1",
+        ]
+      timeout: 20s
+      retries: 10
+
+  backend:
+    build:
+      context: ./server/ecommApp
+      dockerfile: Dockerfile
+    container_name: ecomm_backend
+    command:
+      [
+        "./wait-for-it.sh",
+        "db:3306",
+        "--",
+        "sh",
+        "-c",
+        "python3 manage.py migrate --noinput && python3 manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:8000",
+      ]
+    restart: always
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./server/ecommApp/.env
+    depends_on:
+      - db
+
+  cache:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+volumes:
+  db_data:
+  data:

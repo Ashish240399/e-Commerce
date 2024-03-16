@@ -99,7 +99,7 @@ DATABASES = {
         'NAME': 'ecomm',
         'USER': 'root',
         'PASSWORD': '@Ashish7797',
-        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+        'HOST': 'db',   # Or an IP Address that your DB is hosted on
         'PORT': '3306',
     }
 }
