@@ -47,7 +47,10 @@ const RegisterPage = (props: Props) => {
 
   async function sendEmailFn() {
     try {
-      const response = await sendEmail(registerForm.email);
+      const response = await sendEmail(
+        registerForm.email,
+        registerForm.username
+      );
       if (response.detail == "OTP sent to email") {
         setOpenOtpPop(true);
       }

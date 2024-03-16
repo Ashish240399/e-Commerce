@@ -20,6 +20,7 @@ class EmailView(views.APIView):
 
     def post(self, request, format = None):
         email = request.data.get("email")
+        username = request.data.get("username")
         
         if not email:
             return response.Response({"detail": "Username, password and email are required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -27,6 +28,8 @@ class EmailView(views.APIView):
         if User.objects.filter(email=email).exists():
             return response.Response({"detail": "Email already exists"}, status=status.HTTP_400_BAD_REQUEST)
         
+        if User.objects.filter(username=username).exists():
+            return response.Response({"detail": "Username already exists"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Generate OTP
         otp = random.randint(100000, 999999)
