@@ -32,7 +32,12 @@ class EmailView(views.APIView):
         otp = random.randint(100000, 999999)
 
         # Store OTP in database
-        OTPModels.objects.create(email=email, otp=otp)
+        otpModel = OTPModels.objects.get(email = email)
+        if otpModel is not None:
+            otpModel.otp = otp
+            otpModel.save()
+        else:
+            otpModel.create(email=email, otp=otp)
 
         # Send OTP via email
         subject = "Your OTP For Testing Ecommerce App"
