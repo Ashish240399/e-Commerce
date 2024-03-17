@@ -30,7 +30,9 @@ function MainPageLayout({ children }: { children: React.ReactNode }) {
   }
   useEffect(() => {
     getProductsFn();
-    getCartFn();
+    if (token.length > 0) {
+      getCartFn();
+    }
   }, []);
   return <div>{children}</div>;
 }

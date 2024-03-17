@@ -1,5 +1,7 @@
 "use client";
 import Buttons from "@/components/Buttons";
+import Loader from "@/components/Loader";
+import { LoaderContext } from "@/context/loaderContext/loaderContext";
 import { UserContext } from "@/context/userContext/userContext";
 import { getUserDetails } from "@/services/getUserDeatils";
 import { login } from "@/services/loginAPI";
@@ -11,6 +13,7 @@ type Props = {};
 
 const LoginPage = (props: Props) => {
   const userContext = useContext(UserContext);
+  const loaderContext = useContext(LoaderContext);
   const router = useRouter();
   const [loginForm, setLoginForm] = useState({
     email: "",
@@ -26,6 +29,7 @@ const LoginPage = (props: Props) => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(loginForm);
+    loaderContext?.setLoaderActive(true);
     loginFn();
   };
 
@@ -33,10 +37,12 @@ const LoginPage = (props: Props) => {
     try {
       const response = await login(loginForm.email, loginForm.password);
       console.log(response);
-      getUser(response.token);
+      loaderContext?.setLoaderActive(false);
       localStorage.setItem("login-token", response.token);
+      getUser(response.token);
     } catch (error: any) {
       console.log(error.response.data.detail);
+      loaderContext?.setLoaderActive(false);
     }
   }
 
@@ -52,6 +58,7 @@ const LoginPage = (props: Props) => {
   }
   return (
     <div className="flex items-center justify-center h-[90vh]">
+      <Loader />
       <form
         onSubmit={handleSubmit}
         className="w-[300px] p-4 bg-slate-500 flex flex-col gap-3 m-auto"

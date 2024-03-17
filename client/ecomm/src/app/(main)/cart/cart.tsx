@@ -14,11 +14,14 @@ import { useRouter } from "next/navigation";
 import { getCartFn } from "@/utils/getCart";
 import { addToCartFn } from "@/utils/addToCart";
 import { removeFromCartFn } from "@/utils/removeFromCart";
+import { LoaderContext } from "@/context/loaderContext/loaderContext";
+import Loader from "@/components/Loader";
 
 type Props = {};
 
 const Cart = (props: Props) => {
   const router = useRouter();
+  const loaderContext = useContext(LoaderContext);
   const cartContext = useContext(CartContext);
   const productList = useContext(ProductContext)?.products;
   const token = getTokenFromLocalStorage();
@@ -26,7 +29,10 @@ const Cart = (props: Props) => {
   const [Razorpay] = useRazorpay();
 
   useEffect(() => {
-    getCartFn(token, cartContext);
+    if (token.length > 0) {
+      console.log("line 32");
+      getCartFn(token, cartContext);
+    }
   }, []);
 
   useEffect(() => {
@@ -51,6 +57,7 @@ const Cart = (props: Props) => {
   }, [cartContext?.cart]);
 
   async function checkOutFn() {
+    loaderContext?.setLoaderActive(true);
     razorPay();
   }
 
@@ -76,6 +83,7 @@ const Cart = (props: Props) => {
       .then((response) => {
         console.log(response.data);
         getCartFn(token, cartContext);
+        alert("Order completed");
         router.push("/");
       })
       .catch((error) => {
@@ -98,6 +106,7 @@ const Cart = (props: Props) => {
     })
       .then((response: any) => {
         // get order id
+        loaderContext?.setLoaderActive(false);
         var order_id = response.data.data.id;
 
         // handle payment
@@ -151,8 +160,11 @@ const Cart = (props: Props) => {
     router.push("/auth/login");
   }
 
+  console.log(token.length);
+
   return (
     <div className="w-[90%] m-auto">
+      <Loader />
       {token.length == 0 && (
         <div className="w-[50%] m-auto pt-[20%] flex flex-col justify-center items-center">
           <h1 className="text-center text-2xl">
@@ -176,12 +188,19 @@ const Cart = (props: Props) => {
               />
             ))}
           </div>
-          <div className="flex flex-col justify-end items-end mt-3">
-            <div>Total: {cartContext?.totalPrice.toFixed(2)}$</div>
-            <div className="w-[20%]">
-              <Buttons action={checkOutFn} bg="#15F5BA" text="Checkout" />
+          {cartContext?.totalCartCount == 0 && (
+            <div className="fixed top-[55%] left-[45%] text-[20px] font-bold">
+              Your Cart Is Empty Now
             </div>
-          </div>
+          )}
+          {cartList.length > 0 && (
+            <div className="flex flex-col justify-end items-end mt-3">
+              <div>Total: {cartContext?.totalPrice.toFixed(2)}$</div>
+              <div className="w-[20%]">
+                <Buttons action={checkOutFn} bg="#15F5BA" text="Checkout" />
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

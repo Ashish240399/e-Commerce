@@ -1,5 +1,7 @@
 "use client";
+import Loader from "@/components/Loader";
 import TransparentButton from "@/components/TransparentButton";
+import { LoaderContext } from "@/context/loaderContext/loaderContext";
 import { UserContext } from "@/context/userContext/userContext";
 import { useRouter } from "next/navigation";
 import React, { useContext, useEffect } from "react";
@@ -8,12 +10,13 @@ type Props = {};
 
 const Account = (props: Props) => {
   const userContext = useContext(UserContext);
+  const loaderContext = useContext(LoaderContext);
   const router = useRouter();
   function logout() {
+    loaderContext?.setLoaderActive(true);
     localStorage.removeItem("login-token");
     localStorage.removeItem("user");
     router.push("/");
-    userContext?.setUser(null);
     location.reload();
   }
   useEffect(() => {
@@ -25,6 +28,7 @@ const Account = (props: Props) => {
 
   return (
     <div>
+      <Loader />
       <div>
         Name: {userContext?.user?.firstName + " " + userContext?.user?.lastName}
       </div>

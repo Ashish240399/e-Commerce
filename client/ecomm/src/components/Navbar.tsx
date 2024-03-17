@@ -38,16 +38,6 @@ const Navbar = () => {
           ></div>
         </div>
         <div className="w-fit relative">
-          <Link href="/category">Category</Link>
-          <div
-            className={`${
-              pathname == "/category"
-                ? "h-[1px] rounded-lg w-full bg-secondary absolute top-[100%] left-0 transition-all"
-                : "h-[1px] rounded-lg w-0 bg-secondary absolute top-[100%] left-0 transition-all"
-            }`}
-          ></div>
-        </div>
-        <div className="w-fit relative">
           <Link href="/cart">Cart</Link>
           <div
             className={`${
