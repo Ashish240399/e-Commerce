@@ -29,6 +29,15 @@ export const CartContextProvider = ({
     setTotalCartCount(totalCartCount - 1);
   }
 
+  console.log("cart",cart);
+  useEffect(()=>{
+    let totalCount = 0;
+    cart.forEach((item)=>{
+      totalCount += item.quantity;
+    })
+    setTotalCartCount(totalCount);
+  },[cart])
+
   return (
     <CartContext.Provider
       value={{

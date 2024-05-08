@@ -3,8 +3,6 @@ import Buttons from "@/components/Buttons";
 import CartItem from "@/components/CartItem";
 import { CartContext } from "@/context/cartContext/cartContext";
 import { ProductContext } from "@/context/productContext/productContext";
-import { addToCart } from "@/services/addToCart";
-import { removeFromCart } from "@/services/removeFromCart";
 import { getTokenFromLocalStorage } from "@/utils/getTokenFromLocalStorage";
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
@@ -27,6 +25,7 @@ const Cart = (props: Props) => {
   const token = getTokenFromLocalStorage();
   const [cartList, setCartList] = useState<CartItemType[]>([]);
   const [Razorpay] = useRazorpay();
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
     if (token.length > 0) {
@@ -160,10 +159,13 @@ const Cart = (props: Props) => {
     router.push("/auth/login");
   }
 
-  console.log(token.length);
+  useEffect(()=>{
+    setIsHydrated(true);
+  },[])
 
   return (
-    <div className="w-[90%] m-auto">
+    <div className="w-full">
+    {!isHydrated ? <Loader /> : <div className="w-[100%] m-auto">
       <Loader />
       {token.length == 0 && (
         <div className="w-[50%] m-auto pt-[20%] flex flex-col justify-center items-center">
@@ -176,8 +178,8 @@ const Cart = (props: Props) => {
         </div>
       )}
       {token.length > 0 && (
-        <div>
-          <div className="h-[70vh] overflow-auto">
+        <div className="w-full">
+          <div className="h-[70vh] w-full overflow-auto px-[5%]">
             {cartList.map((cartItem: CartItemType, id) => (
               <CartItem
                 cartItem={cartItem}
@@ -194,7 +196,7 @@ const Cart = (props: Props) => {
             </div>
           )}
           {cartList.length > 0 && (
-            <div className="flex flex-col justify-end items-end mt-3">
+            <div className="flex flex-col justify-end items-end mt-3 px-[5%]">
               <div>Total: {cartContext?.totalPrice.toFixed(2)}$</div>
               <div className="w-[20%]">
                 <Buttons action={checkOutFn} bg="#15F5BA" text="Checkout" />
@@ -203,6 +205,8 @@ const Cart = (props: Props) => {
           )}
         </div>
       )}
+    </div>}
+    
     </div>
   );
 };

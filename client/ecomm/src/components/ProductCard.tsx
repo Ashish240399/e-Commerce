@@ -61,7 +61,7 @@ function ProductCard({ product, productDetailsFn, token, cartValue }: Props) {
 
   return (
     <div className="bg-cardColor rounded-lg overflow-hidden h-[500px]">
-      <div className="w-full h-[]">
+      <div className="w-full">
         <div className="relative w-full h-[300px] pb-full">
           <Image
             alt="product image"

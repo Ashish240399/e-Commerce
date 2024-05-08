@@ -6,6 +6,9 @@ import { ProductContextProvider } from "@/context/productContext/productContext"
 import { CartContextProvider } from "@/context/cartContext/cartContext";
 import { UserContextProvider } from "@/context/userContext/userContext";
 import { LoaderContextProvider } from "@/context/loaderContext/loaderContext";
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
+import { ThemeProvider } from "@mui/material";
+import theme from "@/theme";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,10 +29,14 @@ export default function RootLayout({
           <ProductContextProvider>
             <CartContextProvider>
               <body className={inter.className}>
-                <div className="fixed top-0 left-0 w-[100vw] z-10">
-                  <Navbar />
-                </div>
-                <div className="mt-[70px]">{children}</div>
+                <AppRouterCacheProvider>
+                <ThemeProvider theme={theme}>
+                  <div className="fixed top-0 left-0 w-[100vw] z-10 bg-black">
+                    <Navbar />
+                  </div>
+                  <div className="mt-[70px] bg-black">{children}</div>
+                  </ThemeProvider>
+                </AppRouterCacheProvider>
               </body>
             </CartContextProvider>
           </ProductContextProvider>

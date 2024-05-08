@@ -8,6 +8,7 @@ import { getProducts } from "@/services/getProducts";
 import { getTokenFromLocalStorage } from "@/utils/getTokenFromLocalStorage";
 import { useRouter } from "next/navigation";
 import React, { useContext, useEffect, useState } from "react";
+import Skeleton from '@mui/material/Skeleton';
 
 type Props = {};
 
@@ -51,11 +52,19 @@ const ProductHomePage = (props: Props) => {
       setProductQuantityInCart(productQuantityArr);
     }
   }, [cartContext]);
-  console.log(userContext?.user);
+  console.log(productContext?.products);
   return (
     <div>
       <div className="w-[90%] m-auto grid grid-cols-4 gap-3">
-        {productContext?.products.map((product: ProductType) => (
+        {productContext?.products.length==0 ? new Array(20).fill(undefined).map((_,id)=>(<div key={id} className="h-[500px] bg-cardColor w-full rounded-lg">
+          <Skeleton sx={{ height: 300 }} animation="wave" variant="rectangular" />
+          <div className="px-4">
+            <Skeleton animation="wave" sx={{height:90,width:"100%"}} />
+            <Skeleton animation="wave" sx={{height:30,width:"100%"}} />
+            <Skeleton animation="wave" sx={{height:30,width:"100%"}} />
+            <Skeleton animation="wave" sx={{height:30,width:"50%"}} />
+          </div>
+        </div>)): productContext?.products.map((product: ProductType) => (
           <div key={product.id}>
             <ProductCard
               product={product}
